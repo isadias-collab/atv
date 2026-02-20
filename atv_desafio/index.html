@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Meritocracia</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            height: 100vh;
+            display: flex;
+            align-items: center; 
+            justify-content: center;
+        }
+
+        .container {
+            display: flex;
+            width: 90%;
+            max-width: 1000px;
+            height: 80vh;
+            background-color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .formulario {
+            flex: 1; 
+            padding: 40px;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+        }
+
+        .historico {
+            flex: 1;
+            background-color: #f9f9f9;
+            padding: 20px;
+            overflow-y: auto; 
+            border-left: 2px solid #eee;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ff3db5;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; 
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #ff3db5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #b30048;
+        }
+
+        .item-historico {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #ff3db5;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .item-historico.negado {
+            border-left-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="formulario">
+            <h2>Dados do Funcionário</h2>
+
+            <label for="nome">Digite seu nome:</label>
+            <input type="text" id="nome" placeholder="Ex: João">
+
+            <label for="salario">Digite seu salário atual (R$):</label>
+            <input type="number" id="salario" placeholder="Ex: 2000">
+
+            <label for="cargo">Selecione o cargo:</label>
+            <select name="cargo" id="cargo">
+                <option value="aprendiz">Aprendiz</option>
+                <option value="analista de TI">Analista de TI</option>
+                <option value="gerente de TI">Gerente de TI</option>
+                <option value="diretor de TI">Diretor de TI</option>
+            </select>
+
+            <label for="faltas">Número de faltas:</label>
+            <input type="number" id="faltas" value="0">
+
+            <label for="atrasos">Número de atrasos:</label>
+            <input type="number" id="atrasos" value="0">
+
+            <button onclick="gerarMensagem()">Gerar Reajuste</button>
+        </div>
+
+        <div class="historico">
+            <h2>Histórico de Cálculos</h2>
+            <div id="painel-historico">
+
+                <p style="color: #888; text-align: center;">Nenhum cálculo realizado ainda.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function gerarMensagem() {
+            const nome = document.getElementById("nome").value;
+            const salario = Number(document.getElementById("salario").value);
+            const cargo = document.getElementById("cargo").value;
+            const faltas = Number(document.getElementById("faltas").value);
+            const atrasos = Number(document.getElementById("atrasos").value);
+
+            if (!nome || isNaN(salario)) {
+                alert("Por favor, preencha o nome e o salário.");
+                return;
+            }
+
+            let porcentagem = 0;
+            if (cargo === "analista de TI") {
+                porcentagem = 0.10;
+            } else if (cargo === "gerente de TI") {
+                porcentagem = 0.15;
+            } else if (cargo === "diretor de TI") {
+                porcentagem = 0.20;
+            }
+
+            const aumento = salario * porcentagem;
+            const novoSalario = salario + aumento;
+            const temReajuste = (faltas === 0 && atrasos === 0);
+
+            let mensagem = "";
+            let classeCss = "";
+
+            if (temReajuste) {
+                mensagem = `<strong>${nome}</strong> (${cargo}):<br> Novo salário: R$ ${novoSalario.toFixed(2)}`;
+                classeCss = "item-historico"; 
+            } else {
+                mensagem = `<strong>${nome}</strong> (${cargo}):<br> Reajuste negado por falta/asistencia.`;
+                classeCss = "item-historico negado";
+            }
+
+            const historico = document.getElementById("painel-historico");
+            
+            if (historico.innerHTML.includes("Nenhum cálculo")) {
+                historico.innerHTML = "";
+            }
+
+            const novoItem = document.createElement("div");
+            novoItem.className = classeCss;
+            novoItem.innerHTML = mensagem;
+            
+            historico.prepend(novoItem);
+
+        }  
+    </script>
+    
+</body>
+</html>
